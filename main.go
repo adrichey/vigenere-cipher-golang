@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	vigenereCipher, err := vigenereCipher.NewCipher("THISISTHEKEY")
+	vigenereCipher, err := vigenereCipher.NewCipher("Ozymandias")
 
 	if err != nil {
 		panic(err)
@@ -21,5 +21,8 @@ func main() {
 		panic(err)
 	}
 
+	outputTest := "KD YFTNFS AL RZUZ WR DBTSQJ UUTU NQNVBDQE" // TODO - Turn this into a test
+	fmt.Println(outputTest)
 	fmt.Println(output)
+	fmt.Println(output == outputTest)
 }

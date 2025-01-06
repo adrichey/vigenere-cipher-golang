@@ -1,32 +1,70 @@
 package vigenereCipher
 
 import (
+	"bytes"
 	"errors"
 )
 
+const alphabet string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
 type Cipher struct {
-	letterMap map[string]int
-	secretKey []byte
+	encodingMap map[int]byte
+	letterMap   map[byte]int
+	secretKey   []byte
 }
 
 func (c *Cipher) createLetterMap() {
-	characters := []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	c.letterMap = make(map[string]int)
+	characters := []byte(alphabet)
+	c.letterMap = make(map[byte]int)
 	for k, v := range characters {
-		letter := string(v)
-		c.letterMap[letter] = k
+		c.letterMap[v] = k
+	}
+}
+
+func (c *Cipher) createEncodingMap() {
+	characters := []byte(alphabet)
+	c.encodingMap = make(map[int]byte)
+	for k, v := range characters {
+		c.encodingMap[k] = v
 	}
 }
 
 func (c *Cipher) Encode(input string) (string, error) {
-	err := c.validateInput([]byte(input))
+	s := bytes.ToUpper([]byte(input))
+	err := c.validateInput(s)
 
 	if err != nil {
 		return "", err
 	}
 
-	// TODO - Implement convert text with cipher here
-	return "ENCODED TEXT WILL APPEAR HERE", nil
+	skIndex := 0
+	encodedText := make([]byte, len(input))
+
+	for i, b := range s {
+		if 'A' <= b && b <= 'Z' {
+			encodedText[i] = c.getEncodedByte(b, skIndex)
+
+			if skIndex == len(c.secretKey)-1 {
+				skIndex = 0
+			} else {
+				skIndex++
+			}
+		} else {
+			encodedText[i] = b
+		}
+	}
+
+	return string(encodedText), nil
+}
+
+func (c *Cipher) getEncodedByte(b byte, secretKeyIndex int) byte {
+	shiftKey := c.secretKey[secretKeyIndex]
+	shiftOffset := c.letterMap[shiftKey]
+
+	letterIndex := c.letterMap[b]
+	shiftTarget := (letterIndex + shiftOffset) % len(c.encodingMap)
+
+	return c.encodingMap[shiftTarget]
 }
 
 func (c *Cipher) validateInput(s []byte) error {
@@ -55,7 +93,8 @@ func NewCipher(secretKey string) (*Cipher, error) {
 
 	c := &Cipher{}
 	c.createLetterMap()
-	c.secretKey = sk
+	c.createEncodingMap()
+	c.secretKey = bytes.ToUpper(sk)
 
 	return c, nil
 }
