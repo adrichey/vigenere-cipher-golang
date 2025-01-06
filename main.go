@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/adrichey/vigenere-cipher-golang/vigenereCipher"
 )
@@ -25,4 +26,9 @@ func main() {
 	fmt.Println(outputTest)
 	fmt.Println(output)
 	fmt.Println(output == outputTest)
+
+	decodedMessage, err := vigenereCipher.Decode(input)
+	fmt.Println(decodedMessage)
+	fmt.Println(strings.ToUpper(input))
+	fmt.Println(decodedMessage == strings.ToUpper(input))
 }

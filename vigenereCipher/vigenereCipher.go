@@ -67,6 +67,41 @@ func (c *Cipher) getEncodedByte(b byte, secretKeyIndex int) byte {
 	return c.encodingMap[shiftTarget]
 }
 
+func (c *Cipher) Decode(input string) (string, error) {
+	s := bytes.ToUpper([]byte(input))
+	err := c.validateInput(s)
+
+	if err != nil {
+		return "", err
+	}
+
+	skIndex := 0
+	decodedText := make([]byte, len(input))
+
+	for i, b := range s {
+		if 'A' <= b && b <= 'Z' {
+			decodedText[i] = c.getDecodedByte(b)
+
+			if skIndex == len(c.secretKey)-1 {
+				skIndex = 0
+			} else {
+				skIndex++
+			}
+		} else {
+			decodedText[i] = b
+		}
+	}
+
+	return string(decodedText), nil
+}
+
+func (c *Cipher) getDecodedByte(b byte) byte {
+	letterIndex := c.letterMap[b]
+	shiftTarget := (letterIndex) % len(c.encodingMap)
+
+	return c.encodingMap[shiftTarget]
+}
+
 func (c *Cipher) validateInput(s []byte) error {
 	for _, b := range s {
 		if !('a' <= b && b <= 'z') &&
