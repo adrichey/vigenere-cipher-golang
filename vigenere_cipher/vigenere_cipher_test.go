@@ -1,10 +1,10 @@
 package vigenere_cipher
 
 import (
+	"strconv"
 	"testing"
 )
 
-/*
 func TestInvalidNewCipher(t *testing.T) {
 	testCases := []string{".", "\t", "\r", "\n", "123", "~"}
 
@@ -87,7 +87,6 @@ func TestInvalidDecodeInput(t *testing.T) {
 		}
 	}
 }
-*/
 
 func TestDecode(t *testing.T) {
 	testCases := []map[string]string{
