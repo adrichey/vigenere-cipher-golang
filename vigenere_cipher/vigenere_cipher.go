@@ -105,7 +105,7 @@ func (c *Cipher) validateInput(s []byte) error {
 			b != '\n' &&
 			b != '\t' &&
 			b != ' ' {
-			return errors.New("input is invalid. It must only contain characters A-Z and spaces.")
+			return errors.New("input is invalid. It must only contain characters A-Z and spaces")
 		}
 	}
 
@@ -117,7 +117,7 @@ func NewCipher(secretKey string) (*Cipher, error) {
 	sk := []byte(secretKey)
 	for _, b := range sk {
 		if !('a' <= b && b <= 'z') && !('A' <= b && b <= 'Z') {
-			return nil, errors.New("secretKey is invalid while creating new Cipher instance. It must only contain characters A-Z.")
+			return nil, errors.New("secretKey is invalid while creating new Cipher instance. It must only contain characters A-Z")
 		}
 	}
 
