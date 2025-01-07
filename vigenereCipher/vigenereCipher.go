@@ -7,6 +7,8 @@ import (
 
 const alphabet string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
+type TransformerFunction func(byte, int) byte
+
 type Cipher struct {
 	encodingMap map[int]byte
 	letterMap   map[byte]int
@@ -29,7 +31,7 @@ func (c *Cipher) createEncodingMap() {
 	}
 }
 
-func (c *Cipher) Encode(input string) (string, error) {
+func (c *Cipher) transformInput(input string, transformer TransformerFunction) (string, error) {
 	s := bytes.ToUpper([]byte(input))
 	err := c.validateInput(s)
 
@@ -38,11 +40,11 @@ func (c *Cipher) Encode(input string) (string, error) {
 	}
 
 	skIndex := 0
-	encodedText := make([]byte, len(input))
+	transformedText := make([]byte, len(input))
 
 	for i, b := range s {
 		if 'A' <= b && b <= 'Z' {
-			encodedText[i] = c.getEncodedByte(b, skIndex)
+			transformedText[i] = transformer(b, skIndex)
 
 			if skIndex == len(c.secretKey)-1 {
 				skIndex = 0
@@ -50,11 +52,15 @@ func (c *Cipher) Encode(input string) (string, error) {
 				skIndex++
 			}
 		} else {
-			encodedText[i] = b
+			transformedText[i] = b
 		}
 	}
 
-	return string(encodedText), nil
+	return string(transformedText), nil
+}
+
+func (c *Cipher) Encode(input string) (string, error) {
+	return c.transformInput(input, c.getEncodedByte)
 }
 
 func (c *Cipher) getEncodedByte(b byte, secretKeyIndex int) byte {
@@ -68,34 +74,10 @@ func (c *Cipher) getEncodedByte(b byte, secretKeyIndex int) byte {
 }
 
 func (c *Cipher) Decode(input string) (string, error) {
-	s := bytes.ToUpper([]byte(input))
-	err := c.validateInput(s)
-
-	if err != nil {
-		return "", err
-	}
-
-	skIndex := 0
-	decodedText := make([]byte, len(input))
-
-	for i, b := range s {
-		if 'A' <= b && b <= 'Z' {
-			decodedText[i] = c.getDecodedByte(b)
-
-			if skIndex == len(c.secretKey)-1 {
-				skIndex = 0
-			} else {
-				skIndex++
-			}
-		} else {
-			decodedText[i] = b
-		}
-	}
-
-	return string(decodedText), nil
+	return c.transformInput(input, c.getDecodedByte)
 }
 
-func (c *Cipher) getDecodedByte(b byte) byte {
+func (c *Cipher) getDecodedByte(b byte, _ int) byte {
 	letterIndex := c.letterMap[b]
 	shiftTarget := (letterIndex) % len(c.encodingMap)
 
