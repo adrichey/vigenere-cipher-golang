@@ -77,11 +77,24 @@ func (c *Cipher) Decode(input string) (string, error) {
 	return c.transformInput(input, c.getDecodedByte)
 }
 
-func (c *Cipher) getDecodedByte(b byte, _ int) byte {
-	letterIndex := c.letterMap[b]
-	shiftTarget := (letterIndex) % len(c.encodingMap)
+func (c *Cipher) getDecodedByte(b byte, secretKeyIndex int) byte {
+	shiftKey := c.secretKey[secretKeyIndex]
+	shiftedIndex := c.letterMap[shiftKey]
 
-	return c.encodingMap[shiftTarget]
+	// Rotate alphabet so that our secret key letter becomes index zero
+	characters := []byte(alphabet)
+	decoder := append(characters[shiftedIndex:], characters[:shiftedIndex]...)
+
+	// Find the decoded letter's index in the shifted slice
+	var decodedIndex int
+	for i, letter := range decoder {
+		if letter == b {
+			decodedIndex = i
+			break
+		}
+	}
+
+	return characters[decodedIndex]
 }
 
 func (c *Cipher) validateInput(s []byte) error {
