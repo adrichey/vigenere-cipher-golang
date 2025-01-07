@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/adrichey/vigenere-cipher-golang/vigenereCipher"
+	"github.com/adrichey/vigenere-cipher-golang/vigenere_cipher"
 )
 
 func main() {
-	vigenereCipher, err := vigenereCipher.NewCipher("Ozymandias")
+	vc, err := vigenere_cipher.NewCipher("Ozymandias")
 
 	if err != nil {
 		panic(err)
@@ -16,7 +16,7 @@ func main() {
 
 	// TODO: Fetch this input from an input file eventually
 	input := "We attack at dawn We attack with kindness"
-	output, err := vigenereCipher.Encode(input)
+	output, err := vc.Encode(input)
 
 	if err != nil {
 		panic(err)
@@ -27,7 +27,7 @@ func main() {
 	fmt.Println(output)
 	fmt.Println(output == outputTest)
 
-	decodedMessage, err := vigenereCipher.Decode(input)
+	decodedMessage, err := vc.Decode(outputTest)
 	fmt.Println(decodedMessage)
 	fmt.Println(strings.ToUpper(input))
 	fmt.Println(decodedMessage == strings.ToUpper(input))

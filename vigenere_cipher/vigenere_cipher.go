@@ -1,4 +1,4 @@
-package vigenereCipher
+package vigenere_cipher
 
 import (
 	"bytes"
